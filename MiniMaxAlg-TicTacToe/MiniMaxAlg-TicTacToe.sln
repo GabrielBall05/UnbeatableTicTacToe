@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MiniMaxAlg-TicTacToe", "MiniMaxAlg-TicTacToe\MiniMaxAlg-TicTacToe.vcxproj", "{01F7E50E-B417-4BEA-9B72-2090119EFF87}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01F7E50E-B417-4BEA-9B72-2090119EFF87}.Debug|x64.ActiveCfg = Debug|x64
+		{01F7E50E-B417-4BEA-9B72-2090119EFF87}.Debug|x64.Build.0 = Debug|x64
+		{01F7E50E-B417-4BEA-9B72-2090119EFF87}.Debug|x86.ActiveCfg = Debug|Win32
+		{01F7E50E-B417-4BEA-9B72-2090119EFF87}.Debug|x86.Build.0 = Debug|Win32
+		{01F7E50E-B417-4BEA-9B72-2090119EFF87}.Release|x64.ActiveCfg = Release|x64
+		{01F7E50E-B417-4BEA-9B72-2090119EFF87}.Release|x64.Build.0 = Release|x64
+		{01F7E50E-B417-4BEA-9B72-2090119EFF87}.Release|x86.ActiveCfg = Release|Win32
+		{01F7E50E-B417-4BEA-9B72-2090119EFF87}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F7FA7AE3-3D5F-4343-AAF6-860DE331EFE6}
+	EndGlobalSection
+EndGlobal
