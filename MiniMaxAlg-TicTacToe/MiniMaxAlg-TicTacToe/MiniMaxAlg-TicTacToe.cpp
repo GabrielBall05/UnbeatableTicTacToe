@@ -6,11 +6,14 @@
 
 #include <iostream>
 #include <random> 
+#include <windows.h>
 using namespace std;
 
 void displayBoard(char board[3][3]);
 void userCoordToArrayCoord(int& r, int& c, string row, string col);
 bool gameOver();
+void pickRandomEmptySpot(char board[3][3], int& r, int& c);
+void arrayCoordToUserCoord(string& row, string& col, int r, int c);
 
 int main()
 {
@@ -27,7 +30,8 @@ int main()
 		 << "  ---|---|---" << endl
 		 << "B    |   |   " << endl
 		 << "  ---|---|---" << endl
-		 << "C    |   |   " << endl << endl << endl;
+		 << "C    |   |   " << endl << endl;
+
 	cout << "Since I'm just so confident, you get to choose who goes first. Here are your options: " << endl;
 	cout << "   Type '0' to go first" << endl;
 	cout << "   Type '1' for the AI to go first" << endl; 
@@ -43,14 +47,9 @@ int main()
 		cin >> ans;
 	}
 
-	if (ans == "0")
-	{
-		cout << "Ok, you go first!" << endl;
-	}
-	else if (ans == "1")
+	if (ans == "1")
 	{
 		playerTurn = false;
-		cout << "Ok, the AI will go first!" << endl;
 	}
 	else if (ans == "2")
 	{
@@ -74,37 +73,38 @@ int main()
 		if (randomNumber == 1)
 		{
 			cout << "The coin landed on Heads!" << endl;
-			if (coinDecision == "H" || coinDecision == "h")
-			{
-				cout << "Ok, you go first!" << endl;
-			}
-			else
+			if (coinDecision == "T" || coinDecision == "t")
 			{
 				playerTurn = false;
-				cout << "The AI will go first!" << endl;
 			}
 		}
 		else if (randomNumber == 2)
 		{
 			cout << "The coin landed on Tails!" << endl;
-			if (coinDecision == "T" || coinDecision == "t")
-			{
-				cout << "Ok, you go first!" << endl;
-			}
-			else
+			if (coinDecision == "H" || coinDecision == "h")
 			{
 				playerTurn = false;
-				cout << "The AI will go first!" << endl;
 			}
 		}
 	}
+	if (playerTurn)
+	{
+		cout << "Ok, you will be going first!" << endl;
+	}
+	else
+	{
+		cout << "Ok, the AI will be going first!" << endl;
+	}
+	Sleep(500);
+
 	//HOW TO PLAY
+	cout << "==============================HOW TO PLAY==============================" << endl;
 	cout << "Here's how this will go. You will be X, the AI will be O." << endl;
 	cout << "When it is your turn, you will be prompted to input a row." << endl;
 	cout << "After you give the row, you will be asked for a column." << endl;
 	cout << "If that space is empty, your X will be placed there." << endl;
 	cout << "If that space is occupied, you will be asked for a row & column again." << endl;
-	cout << "Enter anything to start the game: " << endl;
+	cout << "Enter anything to start the game: ";
 	string cont;
 	cin >> cont;
 	system("CLS");
@@ -114,14 +114,15 @@ int main()
 	//GAME LOOP
 	while (!gameOver())
 	{
+		string row;
+		string col;
 		int r;
 		int c;
 		if (playerTurn)
 		{
-			cout << "It is your turn. You will now be asked for a row, then a column." << endl;
+			cout << "It is your turn. You will be asked for a row, then a column." << endl;
 			bool validSpot = false;
-			string row;
-			string col;
+
 			while (!validSpot)
 			{
 				//ROW
@@ -157,15 +158,59 @@ int main()
 		}
 		else
 		{
-			cout << "It is the AI's turn now" << endl;
-			cout << "AI placed it at (r,c)" << endl;
+			cout << "It is the AI's turn now." << endl;
+			pickRandomEmptySpot(board, r, c);
+			board[r][c] = 'O';
 			playerTurn = true;
 		}
 		system("CLS");
+		arrayCoordToUserCoord(row, col, r, c);
+		cout << "The AI placed its O at " << row << col << endl << endl;
 		displayBoard(board);
 	}
 
 	cout << endl << endl;
+}
+
+void displayBoard(char board[3][3])
+{
+	cout << "   1   2   3" << endl
+		 << "A  " << board[0][0] << " | " << board[0][1] << " | " << board[0][2] << endl
+		 << "  -----------" << endl
+		 << "B  " << board[1][0] << " | " << board[1][1] << " | " << board[1][2] << endl
+		 << "  -----------" << endl
+		 << "C  " << board[2][0] << " | " << board[2][1] << " | " << board[2][2] << endl << endl;
+}
+
+bool gameOver()
+{
+	return false;
+}
+
+void pickRandomEmptySpot(char board[3][3], int& r, int& c)
+{
+	bool validSpot = false;
+	int randomRow;
+	int randomCol;
+	while (!validSpot)
+	{
+		random_device rand1;
+		mt19937 gen1(rand1());
+		uniform_int_distribution<>dis1(0, 2);
+		randomRow = dis1(gen1);
+
+		random_device rand2;
+		mt19937 gen2(rand2());
+		uniform_int_distribution<>dis2(0, 2);
+		randomCol = dis2(gen2);
+
+		if (board[randomRow][randomCol] == ' ')
+		{
+			validSpot = true;
+			r = randomRow;
+			c = randomCol;
+		}
+	}
 }
 
 void userCoordToArrayCoord(int& r, int& c, string row, string col)
@@ -198,21 +243,35 @@ void userCoordToArrayCoord(int& r, int& c, string row, string col)
 	}
 }
 
-void displayBoard(char board[3][3])
+void arrayCoordToUserCoord(string& row, string& col, int r, int c)
 {
-	cout << "   1   2   3" << endl
-		 << "A  " << board[0][0] << " | " << board[0][1] << " | " << board[0][2] << endl
-		 << "  -----------" << endl
-		 << "B  " << board[1][0] << " | " << board[1][1] << " | " << board[1][2] << endl
-		 << "  -----------" << endl
-		 << "C  " << board[2][0] << " | " << board[2][1] << " | " << board[2][2] << endl << endl;
+	//SET ROW STRING
+	if (r == 0)
+	{
+		row = "A";
+	}
+	else if (r == 1)
+	{
+		row = "B";
+	}
+	else if (r == 2)
+	{
+		row = "C";
+	}
+	//SET COl STRING
+	if (c == 0)
+	{
+		col = "1";
+	}
+	else if (c == 1)
+	{
+		col = "2";
+	}
+	else if (c == 2)
+	{
+		col = "3";
+	}
 }
-
-bool gameOver()
-{
-	return false;
-}
-
 
 
 
@@ -232,13 +291,13 @@ bool gameOver()
 
 
 //cout << "         |         |         " << endl
-//	 << "    X    |         |         " << endl
-//	 << "         |         |         " << endl
-//	 << "-----------------------------" << endl
-//	 << "         |         |         " << endl
-//	 << "         |    X    |         " << endl
-//	 << "         |         |         " << endl
-//	 << "-----------------------------" << endl
-//	 << "         |         |         " << endl
-//	 << "         |         |    X    " << endl
-//	 << "         |         |         " << endl;
+//	   << "    X    |         |         " << endl
+//	   << "         |         |         " << endl
+//	   << "-----------------------------" << endl
+//	   << "         |         |         " << endl
+//	   << "         |    X    |         " << endl
+//	   << "         |         |         " << endl
+//	   << "-----------------------------" << endl
+//	   << "         |         |         " << endl
+//	   << "         |         |    X    " << endl
+//	   << "         |         |         " << endl;
