@@ -11,7 +11,7 @@ using namespace std;
 
 void displayBoard(char board[3][3]);
 void userCoordToArrayCoord(int& r, int& c, string row, string col);
-bool gameOver();
+bool gameOver(char board[3][3], string& whoWon);
 void pickRandomEmptySpot(char board[3][3], int& r, int& c);
 void arrayCoordToUserCoord(string& row, string& col, int r, int c);
 
@@ -24,7 +24,7 @@ int main()
 	};
 	bool playerTurn = true; //Default to true
 
-	cout << "This is the empty Tic-Tac-Toe Board." << endl;
+	cout << "This is what the Tic-Tac-Toe Board looks like." << endl;
 	cout << "   1   2   3 " << endl
 		 << "A    |   |   " << endl
 		 << "  ---|---|---" << endl
@@ -33,25 +33,25 @@ int main()
 		 << "C    |   |   " << endl << endl;
 
 	cout << "Since I'm just so confident, you get to choose who goes first. Here are your options: " << endl;
-	cout << "   Type '0' to go first" << endl;
-	cout << "   Type '1' for the AI to go first" << endl; 
-	cout << "   Type '2' for a coin toss" << endl;
+	cout << "   Type 'M' to go first" << endl;
+	cout << "   Type 'A' for the AI to go first" << endl; 
+	cout << "   Type 'C' for a coin toss" << endl;
 	cout << "Your decision: ";
 
 	string ans;
 	cin >> ans;
 
-	while (ans != "0" && ans != "1" && ans != "2")
+	while (ans != "M" && ans != "A" && ans != "C" && ans != "m" && ans != "a" && ans != "c")
 	{
-		cout << "Invalid Response. Please type 0, 1, or 2: ";
+		cout << "Invalid Response. Please type M, A, or C: ";
 		cin >> ans;
 	}
 
-	if (ans == "1")
+	if (ans == "A" || ans == "a")
 	{
 		playerTurn = false;
 	}
-	else if (ans == "2")
+	else if (ans == "C" || ans == "c")
 	{
 		//Perform Coin Toss
 		cout << "The coin is in the air! Type 'H' for heads or 'T' for tails: ";
@@ -87,6 +87,8 @@ int main()
 			}
 		}
 	}
+
+	system("CLS");
 	if (playerTurn)
 	{
 		cout << "Ok, you will be going first!" << endl;
@@ -98,12 +100,12 @@ int main()
 	Sleep(500);
 
 	//HOW TO PLAY
-	cout << "==============================HOW TO PLAY==============================" << endl;
-	cout << "Here's how this will go. You will be X, the AI will be O." << endl;
-	cout << "When it is your turn, you will be prompted to input a row." << endl;
-	cout << "After you give the row, you will be asked for a column." << endl;
-	cout << "If that space is empty, your X will be placed there." << endl;
-	cout << "If that space is occupied, you will be asked for a row & column again." << endl;
+	cout << endl << "==============================HOW TO PLAY==============================" << endl;
+	cout << "Here's how this will go. You will be X, the AI will be O." << endl; //Sleep(2000);
+	cout << "When it is your turn, you will be prompted to input a row." << endl; //Sleep(2000);
+	cout << "After you give the row, you will be asked for a column." << endl; //Sleep(2000);
+	cout << "If that space is empty, your X will be placed there." << endl; //Sleep(2000);
+	cout << "If that space is occupied, you will be asked for a row & column again." << endl; //Sleep(2000);
 	cout << "Enter anything to start the game: ";
 	string cont;
 	cin >> cont;
@@ -112,7 +114,8 @@ int main()
 	displayBoard(board);
 
 	//GAME LOOP
-	while (!gameOver())
+	string whoWon;
+	while (!gameOver(board, whoWon))
 	{
 		string row;
 		string col;
@@ -120,7 +123,7 @@ int main()
 		int c;
 		if (playerTurn)
 		{
-			cout << "It is your turn. You will be asked for a row, then a column." << endl;
+			cout << "It is your turn. Enter a row first, then a column." << endl;
 			bool validSpot = false;
 
 			while (!validSpot)
@@ -152,7 +155,7 @@ int main()
 					validSpot = true;
 				}
 			}
-			cout << "Placing your X at " << row << col << endl;
+			cout << "Placing your 'X' at " << row << col << endl;
 			board[r][c] = 'X';
 			playerTurn = false;
 		}
@@ -165,9 +168,12 @@ int main()
 		}
 		system("CLS");
 		arrayCoordToUserCoord(row, col, r, c);
-		cout << "The AI placed its O at " << row << col << endl << endl;
+		cout << "The AI placed its 'O' at " << row << col << endl << endl;
 		displayBoard(board);
 	}
+	system("CLS");
+	displayBoard(board);
+	cout << whoWon << " won the game!" << endl;
 
 	cout << endl << endl;
 }
@@ -182,9 +188,101 @@ void displayBoard(char board[3][3])
 		 << "C  " << board[2][0] << " | " << board[2][1] << " | " << board[2][2] << endl << endl;
 }
 
-bool gameOver()
+bool gameOver(char board[3][3], string& whoWon)
 {
-	return false;
+	//PROBABLY A BETTER ALGORITHM FOR THIS BUT WHATEVER FOR NOW
+	bool gameOver = false;
+
+	for (int r = 0; r < 3 && gameOver == false; r++)
+	{
+		if (board[r][0] == board[r][1] && board[r][1] == board[r][2])
+		{
+			if (board[r][0] == 'X' || board[r][0] == 'O')
+			{
+				gameOver = true;
+				if (board[r][0] == 'X')
+				{
+					whoWon = "You";
+				}
+				else if (board[r][0] == 'O')
+				{
+					whoWon = "AI";
+				}
+			}
+			else
+			{
+				gameOver = false;
+			}
+		}
+	}
+
+	for (int c = 0; c < 3 && gameOver == false; c++)
+	{
+		if (board[0][c] == board[1][c] && board[1][c] == board[2][c])
+		{
+			if (board[0][c] == 'X' || board[0][c] == 'O')
+			{
+				gameOver = true;
+				if (board[0][c] == 'X')
+				{
+					whoWon = "You";
+				}
+				else if (board[0][c] == 'O')
+				{
+					whoWon = "AI";
+				}
+			}
+			else
+			{
+				gameOver = false;
+			}
+		}
+	}
+
+	if (!gameOver)
+	{
+		if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && (board[0][0] == 'X' || board[0][0] == 'O'))
+		{
+			gameOver = true;
+
+		}
+		if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && (board[0][2] == 'X' || board[0][2] == 'O'))
+		{
+			gameOver = true;
+		}
+		//WHO WON
+		if (board[1][1] == 'X')
+		{
+			whoWon = "You";
+		}
+		else if (board[1][1] == 'O')
+		{
+			whoWon = "AI";
+		}
+	}
+
+	//DRAW
+	if (!gameOver)
+	{
+		int i = 0;
+		for (int r = 0; r < 3; r++)
+		{
+			for (int c = 0; c < 3; c++)
+			{
+				if (board[r][c] != ' ')
+				{
+					i++;
+				}
+				if (i >= 9)
+				{
+					gameOver = true;
+					whoWon = "Nobody";
+				}
+			}
+		}
+	}
+
+	return gameOver;
 }
 
 void pickRandomEmptySpot(char board[3][3], int& r, int& c)
@@ -272,22 +370,6 @@ void arrayCoordToUserCoord(string& row, string& col, int r, int c)
 		col = "3";
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //cout << "         |         |         " << endl
