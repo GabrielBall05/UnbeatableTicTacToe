@@ -25,12 +25,7 @@ int main()
 	bool playerTurn = true; //Default to true
 
 	cout << "This is what the Tic-Tac-Toe Board looks like." << endl;
-	cout << "   1   2   3 " << endl
-		 << "A    |   |   " << endl
-		 << "  ---|---|---" << endl
-		 << "B    |   |   " << endl
-		 << "  ---|---|---" << endl
-		 << "C    |   |   " << endl << endl;
+	displayBoard(board);
 
 	cout << "Since I'm just so confident, you get to choose who goes first. Here are your options: " << endl;
 	cout << "   Type 'M' to go first" << endl;
@@ -64,7 +59,7 @@ int main()
 			cin >> coinDecision;
 		}
 
-		//Random number stuff idk
+		//Random number stuff idektbh
 		random_device rand;
 		mt19937 gen(rand());
 		uniform_int_distribution<>dis(1, 2);
@@ -86,6 +81,7 @@ int main()
 				playerTurn = false;
 			}
 		}
+		Sleep(2000);
 	}
 
 	system("CLS");
@@ -97,15 +93,15 @@ int main()
 	{
 		cout << "Ok, the AI will be going first!" << endl;
 	}
-	Sleep(500);
+	//Sleep(1500);
 
 	//HOW TO PLAY
 	cout << endl << "==============================HOW TO PLAY==============================" << endl;
 	cout << "Here's how this will go. You will be X, the AI will be O." << endl; //Sleep(2000);
-	cout << "When it is your turn, you will be prompted to input a row." << endl; //Sleep(2000);
-	cout << "After you give the row, you will be asked for a column." << endl; //Sleep(2000);
+	cout << "When it is your turn, you will be prompted to input a column." << endl; //Sleep(2000);
+	cout << "After you give the row, you will be asked for a row." << endl; //Sleep(2000);
 	cout << "If that space is empty, your X will be placed there." << endl; //Sleep(2000);
-	cout << "If that space is occupied, you will be asked for a row & column again." << endl; //Sleep(2000);
+	cout << "If that space is occupied, you will be asked for a column & row again." << endl << endl; //Sleep(2000);
 	cout << "Enter anything to start the game: ";
 	string cont;
 	cin >> cont;
@@ -123,52 +119,51 @@ int main()
 		int c;
 		if (playerTurn)
 		{
-			cout << "It is your turn. Enter a row first, then a column." << endl;
+			cout << "It is your turn. Enter a column, then enter a row." << endl;
 			bool validSpot = false;
 
 			while (!validSpot)
 			{
-				//ROW
-				cout << "Row: ";
-				cin >> row;
-				while (row != "A" && row != "a" && row != "B" && row != "b" && row != "C" && row != "c")
-				{
-					cout << "Invalid Input, please enter A, B or C: ";
-					cin >> row;
-				}
 				//COLUMN
 				cout << "Column: ";
 				cin >> col;
-				while (col != "1" && col != "2" && col != "3")
+				while (col != "A" && col != "a" && col != "B" && col != "b" && col != "C" && col != "c")
+				{
+					cout << "Invalid Input, please enter A, B or C: ";
+					cin >> col;
+				}
+				//ROW
+				cout << "Row: ";
+				cin >> row;
+				while (row != "1" && row != "2" && row != "3")
 				{
 					cout << "Invalid Input, please enter 1, 2 or 3: ";
-					cin >> col;
+					cin >> row;
 				}
 
 				userCoordToArrayCoord(r, c, row, col);
-				if (board[r][c] == 'O' || board[r][c] == 'X')
+				if (board[r][c] != ' ')
 				{
-					cout << row << col << " is already marked with an " << board[r][c] << ". Choose another spot." << endl;
+					cout << col << row << " is already marked with an " << board[r][c] << ". Choose another spot." << endl;
 				}
 				else
 				{
 					validSpot = true;
 				}
 			}
-			cout << "Placing your 'X' at " << row << col << endl;
 			board[r][c] = 'X';
 			playerTurn = false;
 		}
 		else
 		{
-			cout << "It is the AI's turn now." << endl;
+			//CHANGE TO MINIMAX
 			pickRandomEmptySpot(board, r, c);
 			board[r][c] = 'O';
 			playerTurn = true;
 		}
 		system("CLS");
 		arrayCoordToUserCoord(row, col, r, c);
-		cout << "The AI placed its 'O' at " << row << col << endl << endl;
+		cout << "The AI placed its 'O' at " << col << row << endl << endl;
 		displayBoard(board);
 	}
 	system("CLS");
@@ -180,42 +175,37 @@ int main()
 
 void displayBoard(char board[3][3])
 {
-	cout << "   1   2   3" << endl
-		 << "A  " << board[0][0] << " | " << board[0][1] << " | " << board[0][2] << endl
-		 << "  -----------" << endl
-		 << "B  " << board[1][0] << " | " << board[1][1] << " | " << board[1][2] << endl
-		 << "  -----------" << endl
-		 << "C  " << board[2][0] << " | " << board[2][1] << " | " << board[2][2] << endl << endl;
+	cout << "   A   B   C" << endl
+		<< "1  " << board[0][0] << " | " << board[0][1] << " | " << board[0][2] << endl
+		<< "  -----------" << endl
+		<< "2  " << board[1][0] << " | " << board[1][1] << " | " << board[1][2] << endl
+		<< "  -----------" << endl
+		<< "3  " << board[2][0] << " | " << board[2][1] << " | " << board[2][2] << endl << endl;
 }
 
 bool gameOver(char board[3][3], string& whoWon)
 {
-	//PROBABLY A BETTER ALGORITHM FOR THIS BUT WHATEVER FOR NOW
 	bool gameOver = false;
-
-	for (int r = 0; r < 3 && gameOver == false; r++)
+	//CHECK ROWS
+	for (int r = 0; r < 3 && !gameOver; r++)
 	{
 		if (board[r][0] == board[r][1] && board[r][1] == board[r][2])
 		{
-			if (board[r][0] == 'X' || board[r][0] == 'O')
+			if (board[r][0] != ' ')
 			{
 				gameOver = true;
 				if (board[r][0] == 'X')
 				{
-					whoWon = "You";
+					whoWon = "PLAYER";
 				}
 				else if (board[r][0] == 'O')
 				{
 					whoWon = "AI";
 				}
 			}
-			else
-			{
-				gameOver = false;
-			}
 		}
 	}
-
+	//CHECK COLUMNS
 	for (int c = 0; c < 3 && gameOver == false; c++)
 	{
 		if (board[0][c] == board[1][c] && board[1][c] == board[2][c])
@@ -225,43 +215,30 @@ bool gameOver(char board[3][3], string& whoWon)
 				gameOver = true;
 				if (board[0][c] == 'X')
 				{
-					whoWon = "You";
+					whoWon = "PLAYER";
 				}
 				else if (board[0][c] == 'O')
 				{
 					whoWon = "AI";
 				}
 			}
-			else
-			{
-				gameOver = false;
-			}
 		}
 	}
-
-	if (!gameOver)
+	//CHECK DIAGONALS
+	if (((board[1][1] == board[0][0] && board[1][1] == board[2][2]) || (board[1][1] == board[0][2] && board[1][1] == board[2][0])) && board[1][1] != ' ')
 	{
-		if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && (board[0][0] == 'X' || board[0][0] == 'O'))
-		{
-			gameOver = true;
-
-		}
-		if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && (board[0][2] == 'X' || board[0][2] == 'O'))
-		{
-			gameOver = true;
-		}
+		gameOver = true;
 		//WHO WON
 		if (board[1][1] == 'X')
 		{
-			whoWon = "You";
+			whoWon = "PLAYER";
 		}
 		else if (board[1][1] == 'O')
 		{
 			whoWon = "AI";
 		}
 	}
-
-	//DRAW
+	//CHECK DRAW
 	if (!gameOver)
 	{
 		int i = 0;
@@ -276,7 +253,7 @@ bool gameOver(char board[3][3], string& whoWon)
 				if (i >= 9)
 				{
 					gameOver = true;
-					whoWon = "Nobody";
+					whoWon = "DRAW";
 				}
 			}
 		}
@@ -314,28 +291,28 @@ void pickRandomEmptySpot(char board[3][3], int& r, int& c)
 void userCoordToArrayCoord(int& r, int& c, string row, string col)
 {
 	//SET ROW INT
-	if (row == "A" || row == "a")
+	if (row == "1")
 	{
 		r = 0;
 	}
-	else if (row == "B" || row == "b")
+	else if (row == "2")
 	{
 		r = 1;
 	}
-	else if (row == "C" || row == "c")
+	else if (row == "3")
 	{
 		r = 2;
 	}
 	//SET COL INT
-	if (col == "1")
+	if (col == "A" || col == "a")
 	{
 		c = 0;
 	}
-	else if (col == "2")
+	else if (col == "B" || col == "b")
 	{
 		c = 1;
 	}
-	else if (col == "3")
+	else if (col == "C" || col == "c")
 	{
 		c = 2;
 	}
@@ -346,40 +323,42 @@ void arrayCoordToUserCoord(string& row, string& col, int r, int c)
 	//SET ROW STRING
 	if (r == 0)
 	{
-		row = "A";
+		row = "1";
 	}
 	else if (r == 1)
 	{
-		row = "B";
+		row = "2";
 	}
 	else if (r == 2)
 	{
-		row = "C";
+		row = "3";
 	}
 	//SET COl STRING
 	if (c == 0)
 	{
-		col = "1";
+		col = "A";
 	}
 	else if (c == 1)
 	{
-		col = "2";
+		col = "B";
 	}
 	else if (c == 2)
 	{
-		col = "3";
+		col = "C";
 	}
 }
 
 
-//cout << "         |         |         " << endl
-//	   << "    X    |         |         " << endl
-//	   << "         |         |         " << endl
-//	   << "-----------------------------" << endl
-//	   << "         |         |         " << endl
-//	   << "         |    X    |         " << endl
-//	   << "         |         |         " << endl
-//	   << "-----------------------------" << endl
-//	   << "         |         |         " << endl
-//	   << "         |         |    X    " << endl
-//	   << "         |         |         " << endl;
+//cout << "         1         2         3    "
+//	   << "                                  " << endl
+//     << "              |         |         " << endl
+//	   << " A       " << board[0][0] << "    |    " << board[0][1] << "    |    " << board[0][2] << "    " << endl
+//	   << "              |         |         " << endl
+//	   << "     -----------------------------" << endl
+//	   << "              |         |         " << endl
+//	   << " B       " << board[1][0] << "    |    " << board[1][1] << "    |    " << board[1][2] << "    " << endl
+//	   << "              |         |         " << endl
+//	   << "     -----------------------------" << endl
+//	   << "              |         |         " << endl
+//	   << " C       " << board[2][0] << "    |    " << board[2][1] << "    |    " << board[2][2] << "    " << endl
+//	   << "              |         |         " << endl;
