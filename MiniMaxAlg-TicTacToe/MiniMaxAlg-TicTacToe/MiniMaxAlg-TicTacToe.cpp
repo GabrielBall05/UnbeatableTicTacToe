@@ -11,13 +11,16 @@
 #include <string>
 using namespace std;
 
-int miniMax();
+int miniMax(char board[3][3], int depth, bool maximizing);
+void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC);
 void displayBoard(char board[3][3]);
 void whoGoesFirstAndRules(bool& playerTurn);
 void userCoordToArrayCoord(int& r, int& c, string row, string col);
 void arrayCoordToUserCoord(string& row, string& col, int r, int c);
-bool gameOver(char board[3][3], string& whoWon);
+bool gameOver(char board[3][3]);
 void pickRandomEmptySpot(char board[3][3], int& r, int& c);
+
+int winner;
 
 int main()
 {
@@ -27,7 +30,6 @@ int main()
 		{' ',' ',' '}
 	};
 	bool playerTurn = true; //Default to true
-	//Add a bool draw instead of the whoWon since player never wins anyway
 
 
 	cout << "This is what the Tic-Tac-Toe Board looks like." << endl;
@@ -37,8 +39,8 @@ int main()
 
 
 	//GAME LOOP
-	string whoWon; //Replace whoWon later with bool draw
-	while (!gameOver(board, whoWon))
+	int whoWon = 0;
+	while (!gameOver(board))
 	{
 		string row;
 		string col;
@@ -83,37 +85,136 @@ int main()
 		}
 		else
 		{
-			//CHANGE TO MINIMAX
-			pickRandomEmptySpot(board, r, c);
-			board[r][c] = 'O';
+			//pickRandomEmptySpot(board, r, c);
+			int bestMoveR = 999;
+			int bestMoveC = 999;
+			miniMaxStart(board, bestMoveR, bestMoveC);
+			//if (bestMoveR > 10 || bestMoveC > 10)
+			//{
+			//	cout << "There is an error" << endl;
+			//}
+			//else
+			//{
+			cout << bestMoveR << endl;
+			cout << bestMoveC << endl;
+			Sleep(1000);
+			board[bestMoveR][bestMoveC] = 'O';
+			//}
+			//board[r][c] = 'O';
 			playerTurn = true;
+			//arrayCoordToUserCoord(row, col, bestMoveR, bestMoveC);
+			//cout << "The AI placed its 'O' at " << col << row << endl << endl;
+			gameOver(board);
 		}
 		system("CLS");
-		arrayCoordToUserCoord(row, col, r, c);
-		cout << "The AI placed its 'O' at " << col << row << endl << endl;
+		//arrayCoordToUserCoord(row, col, bestMoveR, bestMoveC);
+		//cout << "The AI placed its 'O' at " << col << row << endl << endl;
 		displayBoard(board);
 	}
 	//GAME LOOP ^^^
 	//Clear screen and display who won (and the finished board state)
 	system("CLS");
 	displayBoard(board);
-	//Realistically, whoWon should be a boolean (bool draw) since it's impossible for the player to win
-	if (whoWon == "DRAW")
+	gameOver(board);
+	if (whoWon == 0)
 	{
 		cout << "It was a draw! Nobody wins!" << endl;
 	}
-	else
-		cout << whoWon << " won the game!" << endl;
+	else if (whoWon == 1)
+	{
+		cout << "The AI Wins!" << endl;
+	}
+	else if (whoWon == -1)
+	{
+		cout << "You Win!" << endl;
+	}
 
 	cout << endl << endl;
 }
 
-int miniMax()
+void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC)
 {
+	int bestScore = INT_MIN;
+	bool foundBestMove = false;
 
+	for (int r = 0; r < 3 && !foundBestMove; r++)
+	{
+		for (int c = 0; c < 3 && !foundBestMove; c++)
+		{
+			//If spot is open, make hypothetical move
+			if (board[r][c] == ' ')
+			{
+				int score = miniMax(board, 0, false);
+				if (score > bestScore)
+				{
+					bestMoveR = r;
+					bestMoveC = c;
+					//Stop loops
+					foundBestMove = true;
+				}
+			}
+		}
+	}
 }
 
-bool gameOver(char board[3][3], string& whoWon)
+int miniMax(char board[3][3], int depth, bool maximizing)
+{
+	if (gameOver(board))
+	{
+		return winner;
+	}
+
+	//AI TURN
+	if (maximizing)
+	{
+		int bestScore = INT_MIN;
+
+		for (int r = 0; r < 3; r++)
+		{
+			for (int c = 0; c < 3; c++)
+			{
+				if (board[r][c] == ' ')
+				{
+					//Make hypothetical move
+					board[r][c] = 'O';
+					//Pass hypothetical board
+					int score = miniMax(board, depth + 1, false);
+					if (score > bestScore)
+					{
+						bestScore = score;
+					}
+				}
+			}
+		}
+		return bestScore;
+	}
+	//PLAYER TURN
+	else
+	{
+		int bestScore = INT_MAX;
+
+		for (int r = 0; r < 3; r++)
+		{
+			for (int c = 0; c < 3; c++)
+			{
+				if (board[r][c] == ' ')
+				{
+					//Make hypothetical move
+					board[r][c] = 'X';
+					//Pass hypothetical board
+					int score = miniMax(board, depth + 1, true);
+					if (score < bestScore)
+					{
+						bestScore = score;
+					}
+				}
+			}
+		}
+		return bestScore;
+	}
+}
+
+bool gameOver(char board[3][3])
 {
 	bool gameOver = false;
 	//CHECK ROWS
@@ -126,11 +227,11 @@ bool gameOver(char board[3][3], string& whoWon)
 				gameOver = true;
 				if (board[r][0] == 'X')
 				{
-					whoWon = "PLAYER";
+					winner = -1;
 				}
 				else if (board[r][0] == 'O')
 				{
-					whoWon = "AI";
+					winner = 1;
 				}
 			}
 		}
@@ -145,11 +246,11 @@ bool gameOver(char board[3][3], string& whoWon)
 				gameOver = true;
 				if (board[0][c] == 'X')
 				{
-					whoWon = "PLAYER";
+					winner = -1;
 				}
 				else if (board[0][c] == 'O')
 				{
-					whoWon = "AI";
+					winner = 1;
 				}
 			}
 		}
@@ -161,11 +262,11 @@ bool gameOver(char board[3][3], string& whoWon)
 		//WHO WON
 		if (board[1][1] == 'X')
 		{
-			whoWon = "PLAYER";
+			winner = -1;
 		}
 		else if (board[1][1] == 'O')
 		{
-			whoWon = "AI";
+			winner = 1;
 		}
 	}
 	//CHECK DRAW
@@ -183,7 +284,7 @@ bool gameOver(char board[3][3], string& whoWon)
 				if (i >= 9)
 				{
 					gameOver = true;
-					whoWon = "DRAW";
+					winner = 0;
 				}
 			}
 		}
@@ -339,7 +440,6 @@ void whoGoesFirstAndRules(bool& playerTurn)
 	{
 		cout << "Ok, the AI will be going first." << endl;
 	}
-	//Sleep(1500);
 
 	//HOW TO PLAY
 	cout << endl << "==============================HOW TO PLAY==============================" << endl;
