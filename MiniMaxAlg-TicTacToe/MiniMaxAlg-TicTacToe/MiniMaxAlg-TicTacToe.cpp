@@ -11,16 +11,14 @@
 #include <string>
 using namespace std;
 
-int miniMax(char board[3][3], int depth, bool maximizing);
-void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC);
+int miniMax(char board[3][3], int depth, bool maximizing, int& whoWon);
+void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC, int& whoWon);
 void displayBoard(char board[3][3]);
 void whoGoesFirstAndRules(bool& playerTurn);
 void userCoordToArrayCoord(int& r, int& c, string row, string col);
 void arrayCoordToUserCoord(string& row, string& col, int r, int c);
-bool gameOver(char board[3][3]);
+bool gameOver(char board[3][3], int& whoWon);
 void pickRandomEmptySpot(char board[3][3], int& r, int& c);
-
-int winner;
 
 int main()
 {
@@ -40,7 +38,7 @@ int main()
 
 	//GAME LOOP
 	int whoWon = 0;
-	while (!gameOver(board))
+	while (!gameOver(board, whoWon))
 	{
 		string row;
 		string col;
@@ -88,7 +86,15 @@ int main()
 			//pickRandomEmptySpot(board, r, c);
 			int bestMoveR = 999;
 			int bestMoveC = 999;
-			miniMaxStart(board, bestMoveR, bestMoveC);
+			char boardCopy[3][3];
+			for (int r = 0; r < 3; r++)
+			{
+				for (int c = 0; c < 3; c++)
+				{
+					boardCopy[r][c] = board[r][c];
+				}
+			}
+			miniMaxStart(boardCopy, bestMoveR, bestMoveC, whoWon);
 			board[bestMoveR][bestMoveC] = 'O';
 			//board[r][c] = 'O';
 			playerTurn = true;
@@ -104,34 +110,25 @@ int main()
 	//Clear screen and display who won (and the finished board state)
 	system("CLS");
 	displayBoard(board);
-	gameOver(board);
-	//if (whoWon == 0)
-	//{
-	//	cout << "It was a draw! Nobody wins!" << endl;
-	//}
-	//else if (whoWon == 1)
-	//{
-	//	cout << "The AI Wins!" << endl;
-	//}
-	//else if (whoWon == -1)
-	//{
-	//	cout << "You Win!" << endl;
-	//}
+	gameOver(board, whoWon);
+	if (whoWon == 0)
+	{
+		cout << "It was a draw! Nobody wins!" << endl;
+	}
+	else if (whoWon == 1)
+	{
+		cout << "The AI Wins!" << endl;
+	}
+	else if (whoWon == -1)
+	{
+		cout << "You Win!" << endl;
+	}
 
 	cout << endl << endl;
 }
 
-void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC)
+void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC, int& whoWon)
 {
-	char boardCopy[3][3];
-	for (int r = 0; r < 3; r++)
-	{
-		for (int c = 0; c < 3; c++)
-		{
-			boardCopy[r][c] = board[r][c];
-		}
-	}
-
 	int bestScore = INT_MIN;
 	bool foundBestMove = false;
 
@@ -142,10 +139,11 @@ void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC)
 			//If spot is open, make hypothetical move
 			if (board[r][c] == ' ')
 			{
-				boardCopy[r][c] = 'O';
-				int score = miniMax(boardCopy, 0, false);
+				board[r][c] = 'O';
+				int score = miniMax(board, 0, false, whoWon);
 				if (score > bestScore)
 				{
+					bestScore = score;
 					bestMoveR = r;
 					bestMoveC = c;
 					//Stop loops
@@ -156,11 +154,11 @@ void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC)
 	}
 }
 
-int miniMax(char board[3][3], int depth, bool maximizing)
+int miniMax(char board[3][3], int depth, bool maximizing, int& whoWon)
 {
-	if (gameOver(board))
+	if (gameOver(board, whoWon))
 	{
-		return winner;
+		return whoWon;
 	}
 
 	//AI TURN
@@ -177,7 +175,7 @@ int miniMax(char board[3][3], int depth, bool maximizing)
 					//Make hypothetical move
 					board[r][c] = 'O';
 					//Pass hypothetical board
-					int score = miniMax(board, depth + 1, false);
+					int score = miniMax(board, depth + 1, false, whoWon);
 					if (score > bestScore)
 					{
 						bestScore = score;
@@ -201,7 +199,7 @@ int miniMax(char board[3][3], int depth, bool maximizing)
 					//Make hypothetical move
 					board[r][c] = 'X';
 					//Pass hypothetical board
-					int score = miniMax(board, depth + 1, true);
+					int score = miniMax(board, depth + 1, true, whoWon);
 					if (score < bestScore)
 					{
 						bestScore = score;
@@ -213,7 +211,7 @@ int miniMax(char board[3][3], int depth, bool maximizing)
 	}
 }
 
-bool gameOver(char board[3][3])
+bool gameOver(char board[3][3], int& whoWon)
 {
 	bool gameOver = false;
 	//CHECK ROWS
@@ -226,11 +224,11 @@ bool gameOver(char board[3][3])
 				gameOver = true;
 				if (board[r][0] == 'X')
 				{
-					winner = -1;
+					whoWon = -1;
 				}
 				else if (board[r][0] == 'O')
 				{
-					winner = 1;
+					whoWon = 1;
 				}
 			}
 		}
@@ -245,11 +243,11 @@ bool gameOver(char board[3][3])
 				gameOver = true;
 				if (board[0][c] == 'X')
 				{
-					winner = -1;
+					whoWon = -1;
 				}
 				else if (board[0][c] == 'O')
 				{
-					winner = 1;
+					whoWon = 1;
 				}
 			}
 		}
@@ -261,11 +259,11 @@ bool gameOver(char board[3][3])
 		//WHO WON
 		if (board[1][1] == 'X')
 		{
-			winner = -1;
+			whoWon = -1;
 		}
 		else if (board[1][1] == 'O')
 		{
-			winner = 1;
+			whoWon = 1;
 		}
 	}
 	//CHECK DRAW
@@ -283,7 +281,7 @@ bool gameOver(char board[3][3])
 				if (i >= 9)
 				{
 					gameOver = true;
-					winner = 0;
+					whoWon = 0;
 				}
 			}
 		}
