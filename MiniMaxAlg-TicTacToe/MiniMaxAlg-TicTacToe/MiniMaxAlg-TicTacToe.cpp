@@ -89,22 +89,11 @@ int main()
 			int bestMoveR = 999;
 			int bestMoveC = 999;
 			miniMaxStart(board, bestMoveR, bestMoveC);
-			//if (bestMoveR > 10 || bestMoveC > 10)
-			//{
-			//	cout << "There is an error" << endl;
-			//}
-			//else
-			//{
-			cout << bestMoveR << endl;
-			cout << bestMoveC << endl;
-			Sleep(1000);
 			board[bestMoveR][bestMoveC] = 'O';
-			//}
 			//board[r][c] = 'O';
 			playerTurn = true;
 			//arrayCoordToUserCoord(row, col, bestMoveR, bestMoveC);
 			//cout << "The AI placed its 'O' at " << col << row << endl << endl;
-			gameOver(board);
 		}
 		system("CLS");
 		//arrayCoordToUserCoord(row, col, bestMoveR, bestMoveC);
@@ -116,24 +105,33 @@ int main()
 	system("CLS");
 	displayBoard(board);
 	gameOver(board);
-	if (whoWon == 0)
-	{
-		cout << "It was a draw! Nobody wins!" << endl;
-	}
-	else if (whoWon == 1)
-	{
-		cout << "The AI Wins!" << endl;
-	}
-	else if (whoWon == -1)
-	{
-		cout << "You Win!" << endl;
-	}
+	//if (whoWon == 0)
+	//{
+	//	cout << "It was a draw! Nobody wins!" << endl;
+	//}
+	//else if (whoWon == 1)
+	//{
+	//	cout << "The AI Wins!" << endl;
+	//}
+	//else if (whoWon == -1)
+	//{
+	//	cout << "You Win!" << endl;
+	//}
 
 	cout << endl << endl;
 }
 
 void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC)
 {
+	char boardCopy[3][3];
+	for (int r = 0; r < 3; r++)
+	{
+		for (int c = 0; c < 3; c++)
+		{
+			boardCopy[r][c] = board[r][c];
+		}
+	}
+
 	int bestScore = INT_MIN;
 	bool foundBestMove = false;
 
@@ -144,7 +142,8 @@ void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC)
 			//If spot is open, make hypothetical move
 			if (board[r][c] == ' ')
 			{
-				int score = miniMax(board, 0, false);
+				boardCopy[r][c] = 'O';
+				int score = miniMax(boardCopy, 0, false);
 				if (score > bestScore)
 				{
 					bestMoveR = r;
