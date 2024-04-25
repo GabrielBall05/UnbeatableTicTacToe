@@ -127,9 +127,9 @@ int main()
 	cout << endl << endl;
 }
 
-void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC, int& whoWon)
+void miniMaxStart(char boardCopy[3][3], int& bestMoveR, int& bestMoveC, int& whoWon)
 {
-	int bestScore = INT_MIN;
+	int bestScore = 0;
 	bool foundBestMove = false;
 
 	for (int r = 0; r < 3 && !foundBestMove; r++)
@@ -137,11 +137,11 @@ void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC, int& whoWon)
 		for (int c = 0; c < 3 && !foundBestMove; c++)
 		{
 			//If spot is open, make hypothetical move
-			if (board[r][c] == ' ')
+			if (boardCopy[r][c] == ' ')
 			{
-				board[r][c] = 'O';
-				int score = miniMax(board, 0, false, whoWon);
-				if (score > bestScore)
+				boardCopy[r][c] = 'O';
+				int score = miniMax(boardCopy, 0, false, whoWon);
+				if (score >= bestScore)
 				{
 					bestScore = score;
 					bestMoveR = r;
@@ -149,14 +149,15 @@ void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC, int& whoWon)
 					//Stop loops
 					foundBestMove = true;
 				}
+				boardCopy[r][c] = ' '; //Reset... right?
 			}
 		}
 	}
 }
 
-int miniMax(char board[3][3], int depth, bool maximizing, int& whoWon)
+int miniMax(char boardCopy[3][3], int depth, bool maximizing, int& whoWon)
 {
-	if (gameOver(board, whoWon))
+	if (gameOver(boardCopy, whoWon))
 	{
 		return whoWon;
 	}
@@ -170,16 +171,17 @@ int miniMax(char board[3][3], int depth, bool maximizing, int& whoWon)
 		{
 			for (int c = 0; c < 3; c++)
 			{
-				if (board[r][c] == ' ')
+				if (boardCopy[r][c] == ' ')
 				{
 					//Make hypothetical move
-					board[r][c] = 'O';
+					boardCopy[r][c] = 'O';
 					//Pass hypothetical board
-					int score = miniMax(board, depth + 1, false, whoWon);
+					int score = miniMax(boardCopy, depth + 1, false, whoWon);
 					if (score > bestScore)
 					{
 						bestScore = score;
 					}
+					boardCopy[r][c] = ' '; //Reset... right?
 				}
 			}
 		}
@@ -194,16 +196,17 @@ int miniMax(char board[3][3], int depth, bool maximizing, int& whoWon)
 		{
 			for (int c = 0; c < 3; c++)
 			{
-				if (board[r][c] == ' ')
+				if (boardCopy[r][c] == ' ')
 				{
 					//Make hypothetical move
-					board[r][c] = 'X';
+					boardCopy[r][c] = 'X';
 					//Pass hypothetical board
-					int score = miniMax(board, depth + 1, true, whoWon);
+					int score = miniMax(boardCopy, depth + 1, true, whoWon);
 					if (score < bestScore)
 					{
 						bestScore = score;
 					}
+					boardCopy[r][c] = ' '; //Reset... right?
 				}
 			}
 		}
@@ -211,22 +214,22 @@ int miniMax(char board[3][3], int depth, bool maximizing, int& whoWon)
 	}
 }
 
-bool gameOver(char board[3][3], int& whoWon)
+bool gameOver(char boardCopy[3][3], int& whoWon)
 {
 	bool gameOver = false;
 	//CHECK ROWS
 	for (int r = 0; r < 3 && !gameOver; r++)
 	{
-		if (board[r][0] == board[r][1] && board[r][1] == board[r][2])
+		if (boardCopy[r][0] == boardCopy[r][1] && boardCopy[r][1] == boardCopy[r][2])
 		{
-			if (board[r][0] != ' ')
+			if (boardCopy[r][0] != ' ')
 			{
 				gameOver = true;
-				if (board[r][0] == 'X')
+				if (boardCopy[r][0] == 'X')
 				{
 					whoWon = -1;
 				}
-				else if (board[r][0] == 'O')
+				else if (boardCopy[r][0] == 'O')
 				{
 					whoWon = 1;
 				}
@@ -236,16 +239,16 @@ bool gameOver(char board[3][3], int& whoWon)
 	//CHECK COLUMNS
 	for (int c = 0; c < 3 && gameOver == false; c++)
 	{
-		if (board[0][c] == board[1][c] && board[1][c] == board[2][c])
+		if (boardCopy[0][c] == boardCopy[1][c] && boardCopy[1][c] == boardCopy[2][c])
 		{
-			if (board[0][c] == 'X' || board[0][c] == 'O')
+			if (boardCopy[0][c] == 'X' || boardCopy[0][c] == 'O')
 			{
 				gameOver = true;
-				if (board[0][c] == 'X')
+				if (boardCopy[0][c] == 'X')
 				{
 					whoWon = -1;
 				}
-				else if (board[0][c] == 'O')
+				else if (boardCopy[0][c] == 'O')
 				{
 					whoWon = 1;
 				}
@@ -253,15 +256,15 @@ bool gameOver(char board[3][3], int& whoWon)
 		}
 	}
 	//CHECK DIAGONALS
-	if (((board[1][1] == board[0][0] && board[1][1] == board[2][2]) || (board[1][1] == board[0][2] && board[1][1] == board[2][0])) && board[1][1] != ' ')
+	if (((boardCopy[1][1] == boardCopy[0][0] && boardCopy[1][1] == boardCopy[2][2]) || (boardCopy[1][1] == boardCopy[0][2] && boardCopy[1][1] == boardCopy[2][0])) && boardCopy[1][1] != ' ')
 	{
 		gameOver = true;
 		//WHO WON
-		if (board[1][1] == 'X')
+		if (boardCopy[1][1] == 'X')
 		{
 			whoWon = -1;
 		}
-		else if (board[1][1] == 'O')
+		else if (boardCopy[1][1] == 'O')
 		{
 			whoWon = 1;
 		}
@@ -274,7 +277,7 @@ bool gameOver(char board[3][3], int& whoWon)
 		{
 			for (int c = 0; c < 3; c++)
 			{
-				if (board[r][c] != ' ')
+				if (boardCopy[r][c] != ' ')
 				{
 					i++;
 				}
