@@ -411,11 +411,12 @@ void whoGoesFirstAndRules(bool& playerTurn)
 
 	//HOW TO PLAY
 	cout << endl << "==============================HOW TO PLAY==============================" << endl;
-	cout << "Here's how this will go. You will be X, the AI will be O." << endl; //Sleep(2000);
-	cout << "When it is your turn, you will be prompted to input a column." << endl; //Sleep(2000);
-	cout << "After you give the row, you will be asked for a row." << endl; //Sleep(2000);
-	cout << "If that space is empty, your X will be placed there." << endl; //Sleep(2000);
-	cout << "If that space is occupied, you will be asked for a column & row again." << endl << endl; //Sleep(2000);
+	cout << "Here's how this will go. You will be X, the AI will be O." << endl;
+	cout << "When it is your turn, you will be prompted to input a coordinate." << endl;
+	cout << "The coordinates will be column then row. Examples: B2 (middle), A1 (top left)" << endl;
+	cout << "If that space is empty, your X will be placed there." << endl;
+	cout << "If you type, you will be prompted again." << endl;
+	cout << "If that space is occupied, you will be asked for a column & row again." << endl << endl;
 	cout << "Enter anything to start the game: ";
 	string cont;
 	cin >> cont;
