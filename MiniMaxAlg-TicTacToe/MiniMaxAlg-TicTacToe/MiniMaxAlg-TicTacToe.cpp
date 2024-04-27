@@ -11,6 +11,7 @@
 #include <string>
 using namespace std;
 
+bool playGame();
 int miniMax(char board[3][3], int depth, bool maximizing, int& whoWon);
 void miniMaxStart(char board[3][3], int& bestMoveR, int& bestMoveC, int& whoWon);
 void displayBoard(char board[3][3]);
@@ -21,7 +22,13 @@ bool gameOver(char board[3][3], int& whoWon);
 
 int main()
 {
-	char board[3][3] = {
+	while (playGame()){}
+}
+
+bool playGame()
+{
+	char board[3][3] =
+	{
 		{' ',' ',' '},
 		{' ',' ',' '},
 		{' ',' ',' '}
@@ -114,19 +121,30 @@ int main()
 	displayBoard(board);
 
 	if (whoWon == 0)
-	{
-		cout << "It was a draw! Nobody wins!" << endl;
-	}
+		cout << "It was a draw! Nobody wins!" << endl << endl;
 	else if (whoWon == 1)
-	{
-		cout << "The AI Wins!" << endl;
-	}
+		cout << "The AI Wins!" << endl << endl;
 	else if (whoWon == -1) //This will never happen, but it's here just in case
+		cout << "You Win!" << endl << endl;
+
+	string keepPlaying;
+	cout << "Do you want to play again? (Y/N): ";
+	cin >> keepPlaying;
+	keepPlaying[0] = toupper(keepPlaying[0]);
+	while (keepPlaying != "Y" && keepPlaying != "N")
 	{
-		cout << "You Win!" << endl;
+		cout << "Invalid Input. Enter Y or N: ";
+		cin >> keepPlaying;
+		keepPlaying[0] = toupper(keepPlaying[0]);
 	}
 
-	cout << endl << endl;
+	if (keepPlaying == "Y")
+	{
+		system("CLS");
+		return true;
+	}
+	else
+		return false;
 }
 
 void miniMaxStart(char boardCopy[3][3], int& bestMoveR, int& bestMoveC, int& whoWon)
@@ -303,14 +321,7 @@ bool gameOver(char boardCopy[3][3], int& whoWon)
 void userCoordToArrayCoord(int& r, int& c, char row, char col)
 {
 	r = (row - '0') - 1;
-	if (col == 'A' || col == 'B' || col == 'C')
-	{
-		c = col - 65;
-	}
-	else if (col == 'a' || col == 'b' || col == 'c')
-	{
-		c = col - 97;
-	}
+	c = col - 65;
 }
 
 //Same thing just in reverse so I can display to the user where the AI went
