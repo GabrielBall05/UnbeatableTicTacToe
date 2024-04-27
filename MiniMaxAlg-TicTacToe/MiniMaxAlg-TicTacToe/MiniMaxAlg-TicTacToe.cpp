@@ -166,8 +166,9 @@ void miniMaxStart(char boardCopy[3][3], int& bestMoveR, int& bestMoveC, int& who
 					bestScore = score;
 					bestMoveR = r;
 					bestMoveC = c;
-					//Stop loops
-					foundBestMove = true;
+					if (bestScore == 1) //So that the AI will take winning moves not just blocking moves
+						//Stop loops
+						foundBestMove = true;
 				}
 				boardCopy[r][c] = ' '; //Reset piece
 			}
