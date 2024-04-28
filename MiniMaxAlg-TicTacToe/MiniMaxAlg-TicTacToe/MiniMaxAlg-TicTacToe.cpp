@@ -166,10 +166,11 @@ void miniMaxStart(char boardCopy[3][3], int& bestMoveR, int& bestMoveC, int& who
 					bestScore = score;
 					bestMoveR = r;
 					bestMoveC = c;
-					if (bestScore == 1) //So that the AI will take winning moves not just blocking moves
-						//Stop loops
-						foundBestMove = true;
+
 				}
+				if (bestScore == 1) //So that the AI will take winning moves not just blocking moves
+					foundBestMove = true; //Stop loops
+
 				boardCopy[r][c] = ' '; //Reset piece
 			}
 		}
@@ -347,7 +348,7 @@ void displayBoard(char board[3][3])
 
 void whoGoesFirstAndRules(bool& playerTurn)
 {
-	cout << "Since I'm just so confident, you get to choose who goes first. Here are your options: " << endl;
+	cout << "You'll never win, but I will let you choose who goes first. Here are your options: " << endl;
 	cout << "   Type '1' to go first" << endl;
 	cout << "   Type '2' for the AI to go first" << endl;
 	cout << "   Type '3' for a coin toss" << endl;
