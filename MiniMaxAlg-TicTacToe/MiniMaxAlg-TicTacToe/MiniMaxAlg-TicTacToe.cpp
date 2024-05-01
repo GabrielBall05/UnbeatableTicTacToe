@@ -43,7 +43,7 @@ bool playGame()
 
 	//GAME LOOP
 	int whoWon = 0;
-	int i = 0;
+	bool dontDelay = true;
 	while (!gameOver(board, whoWon))
 	{
 		int r;
@@ -55,7 +55,7 @@ bool playGame()
 
 			while (!validSpot)
 			{
-				if (i == 0 && !validSpot)
+				if (dontDelay && !validSpot)
 					cout << "The Game Has Begun." << endl << endl;
 				string coord;
 				cout << "Enter a coordinate (ex: B2 for middle): ";
@@ -87,7 +87,7 @@ bool playGame()
 		}
 		else
 		{
-			if (i != 0)
+			if (!dontDelay)
 				Sleep(1000);
 			int bestMoveR = 999;
 			int bestMoveC = 999;
@@ -107,7 +107,7 @@ bool playGame()
 			c = bestMoveC;
 			system("CLS");
 		}
-		i++;
+		dontDelay = false;
 		displayBoard(board);
 		string row;
 		string col;
